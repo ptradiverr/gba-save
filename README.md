@@ -1,60 +1,46 @@
-# GBA Backup Tool NDS
+# gba-save
 
-This repository is a workspace for investigating and modifying the Nintendo DS
-ROM image `GBA_Backup_Tool.nds`. The current contents are a prebuilt ROM, its
-configuration file, and a Windows Script Host utility for converting save
-files. No source code, disassembly, or reproducible build process is included
-yet.
+A reverse-engineering project focused on understanding and making small
+modifications to `GBA_Backup_Tool.nds`, the Nintendo DS GBA backup utility.
 
-## Repository contents
+## Project status
 
-- `GBA_Backup_Tool.nds` — the ROM image under investigation. ROM images are
-  ignored by Git; keep your local working copy in the repository root.
-- `GBA_Backup_Tool.ini` — configuration for the backup tool. `FileDir` sets
-  the backup directory; `SaveFile` and `RomSize` support automatic sizing with
-  `0`; uncomment `#Trim` to enable trimming.
-- `EEPROM_cnv.vbs` — Windows Script Host script that reverses the byte order
-  of each 8-byte block in a `.sav` or `.sv1`–`.sv5` file, modifying that file
-  in place.
-- `src/` — place recovered or recreated source here.
-- `patches/` — document and store modifications here.
-- `build/` — generated build output; ignored by Git.
-- `config/`, `docs/`, `scripts/` — configuration, research notes, and helper
-  scripts for the project.
+The project is in its initial investigation stage. The repository currently
+contains the tool's configuration file and an EEPROM save conversion utility.
+Recovered source code, disassembly, patches, and a reproducible build process
+are not yet available.
 
-## Working safely
+The `.nds` executable, game ROMs, save data, and generated build output are
+excluded from version control and are not distributed with this repository.
 
-1. Keep an untouched, legally obtained copy of the ROM outside the working
-   tree. Do not distribute ROM images or save files unless you have the rights
-   to do so.
-2. Before analysis or modification, record a checksum and work on a duplicate:
+## Contents
 
-   ```sh
-   shasum -a 256 GBA_Backup_Tool.nds
-   mkdir -p build
-   cp GBA_Backup_Tool.nds build/GBA_Backup_Tool-working.nds
-   ```
+| File | Description |
+| --- | --- |
+| [GBA_Backup_Tool.ini](GBA_Backup_Tool.ini) | Backup directory, save size, ROM size, and trimming settings. |
+| [EEPROM_cnv.vbs](EEPROM_cnv.vbs) | Windows Script Host utility for converting EEPROM save byte order. |
 
-3. Record the tools, versions, file offsets, and steps used to inspect or
-   modify the image so the work can be repeated.
-4. Keep original and modified checksums, and test changes in an appropriate
-   emulator or on hardware only when you are authorized to do so.
+## Configuration
 
-The repository does not currently define extraction, disassembly, patching, or
-rebuild commands. Add documented commands here as those steps become known.
+`GBA_Backup_Tool.ini` includes these settings:
 
-## Save converter
+| Setting | Default | Purpose |
+| --- | --- | --- |
+| `FileDir` | `/GBA_Backup` | Directory used for backups. |
+| `SaveFile` | `0` | Save file size in KB; `0` selects automatic sizing. |
+| `RomSize` | `0` | ROM backup size in MB; `0` selects automatic sizing. |
+| `Trim` | Disabled | Optional ROM trimming, enabled by uncommenting `#Trim`. |
 
-`EEPROM_cnv.vbs` requires Windows Script Host. It accepts a save-file path as
-its first argument, or prompts for one when started without arguments. It
-rewrites the selected file in place, so make a backup before running it:
+## EEPROM save converter
+
+`EEPROM_cnv.vbs` reverses the byte order within each 8-byte block of a save
+file. It accepts `.sav` and `.sv1` through `.sv5` files and requires Windows
+Script Host with `ADODB.Stream` support.
 
 ```text
 cscript //nologo EEPROM_cnv.vbs "path\to\save.sav"
 ```
 
-## Version control
-
-The `.gitignore` excludes ROM and save images, macOS metadata, and generated
-build output. Keep research notes, scripts, patches, and source changes
-tracked; do not add copyrighted binary assets unless you have permission.
+When run without an argument, the script prompts for a file path.
+**Conversion overwrites the input file**, so retain a backup of the original.
+The converter is a separate utility and does not modify the `.nds` executable.
