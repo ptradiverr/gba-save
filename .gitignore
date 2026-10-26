@@ -1,0 +1,20 @@
+# ROM images and save data
+*.nds
+*.gba
+*.gbc
+*.gb
+*.sav
+*.sv[1-5]
+
+# Generated output
+/build/
+
+# Operating system files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Editor and temporary files
+*.swp
+*.swo
+*~
